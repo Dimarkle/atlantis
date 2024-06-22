@@ -77,7 +77,7 @@ resource "yandex_storage_bucket" "diman-diplom" {
 terraform {
   backend "s3" {
     endpoint       = "storage.yandexcloud.net"
-    bucket         = "diplom-bucket"
+    bucket         = "diman-diplom"
     key            = "terraform.tfstate"
     region         = "ru-central1"
     skip_region_validation      = true
