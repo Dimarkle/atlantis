@@ -67,10 +67,8 @@ resource "yandex_compute_instance" "master" {
   }
 
   metadata = {
-      user-data          = data.template_file.cloudinit.rendered
-  }
+    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
 
-  scheduling_policy { preemptible = false }
  }
 
 ## Kubernetes worker-1
@@ -95,11 +93,8 @@ resource "yandex_compute_instance" "worker-1" {
   }
 
   metadata = {
-      user-data          = data.template_file.cloudinit.rendered
+    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
   }
-
-  scheduling_policy { preemptible = false }
- }
 
 ## Kubernetes worker-2
 resource "yandex_compute_instance" "worker-2" {
@@ -123,10 +118,7 @@ resource "yandex_compute_instance" "worker-2" {
   }
 
   metadata = {
-      user-data          = data.template_file.cloudinit.rendered
-  }
-
-  scheduling_policy { preemptible = false }
+    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
  }
 
 ## Kubernetes worker-3
@@ -151,13 +143,9 @@ resource "yandex_compute_instance" "worker-3" {
   }
 
   metadata = {
-      user-data          = data.template_file.cloudinit.rendered
+    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
+
   }
-
-  scheduling_policy { preemptible = false }
-
- }
-
 
 
 
