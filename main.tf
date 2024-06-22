@@ -153,7 +153,7 @@ resource "yandex_compute_instance" "worker-3" {
 
   scheduling_policy { preemptible = false }
 
-
+ }
 
 
 
