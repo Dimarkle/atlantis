@@ -39,19 +39,16 @@ all:
       hosts: {}
   EOF2
   filename = "../ansible/inventory-kubespray"
-  depends_on = [yandex_compute_instance.master, yandex_compute_instance.worker-1, yandex_compute_instance.worker-2, yandex_compute_instance.worker-3]
+  depends_on = [yandex_compute_instance.vms]
 }
 
 # Ansible inventory for preparation
 resource "local_file" "inventory-preparation" {
-  content = <<EOF1
+  content = <<-EOF
 [kube-cloud]
-${yandex_compute_instance.master.network_interface.0.nat_ip_address}
-${yandex_compute_instance.worker-1.network_interface.0.nat_ip_address}
-${yandex_compute_instance.worker-2.network_interface.0.nat_ip_address}
-${yandex_compute_instance.worker-3.network_interface.0.nat_ip_address}
+${join("\n", values(yandex_compute_instance.vms).*.network_interface.0.nat_ip_address)}
   EOF1
   filename = "../ansible/inventory-preparation"
-  depends_on = [yandex_compute_instance.master, yandex_compute_instance.worker-1, yandex_compute_instance.worker-2, yandex_compute_instance.worker-3]
+  depends_on = [yandex_compute_instance.vms]
 }
 
