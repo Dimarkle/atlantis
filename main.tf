@@ -10,10 +10,8 @@ provider "yandex" {
   
   cloud_id  = var.cloud_id
   folder_id = var.folder_id
+  zone = var.zone
   }
-
-
-
 
 # Создаем VPC
 
@@ -22,129 +20,53 @@ name = "net"
 }
 
 # Подсеть
-resource "yandex_vpc_subnet" "subnet-a" {
-  name           = "subnet-a"
-  zone           = "ru-central1-a"
-  network_id     = yandex_vpc_network.net.id
-  v4_cidr_blocks = ["192.168.10.0/24"]
-}
 
-resource "yandex_vpc_subnet" "subnet-b" {
-  name           = "subnet-b"
-  zone           = "ru-central1-b"
-  network_id     = yandex_vpc_network.net.id
-  v4_cidr_blocks = ["192.168.20.0/24"]
-}
+resource "yandex_vpc_subnet" "subnets" {
+  count = length(var.subnet_names)
 
-resource "yandex_vpc_subnet" "subnet-d" {
-  name           = "subnet-d"
-  zone           = "ru-central1-d"
+  name           = var.subnet_names[count.index]
+  zone           = var.zones[count.index]
   network_id     = yandex_vpc_network.net.id
-  v4_cidr_blocks = ["192.168.30.0/24"]
+  v4_cidr_blocks = [var.cidr_blocks[count.index]]
 }
-
 
 
 # Virtual machines
-## Kubernetes master
-resource "yandex_compute_instance" "master" {
-  name = "master"
-  hostname = "master"
-  zone      = "ru-central1-a"
+resource "yandex_compute_instance" "vms" {
+  for_each = var.instances
+
+  name = each.value.name
+  hostname = each.value.hostname
+  zone = each.value.zone
+
   resources {
-    cores  = 4
-    memory = 4
+    cores  = each.value.cores
+    memory = each.value.memory
   }
+
   boot_disk {
     initialize_params {
       image_id = "fd8di2mid9ojikcm93en"
-      size = "30"
+       platform_id = "standard-v3"
+      size     = "30"
     }
   }
-  network_interface {
-    subnet_id = yandex_vpc_subnet.subnet-a.id
-    nat       = true
-  }
 
-  metadata = {
-    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
-
- }
-
-## Kubernetes worker-1
-resource "yandex_compute_instance" "worker-1" {
-  name = "worker-1"
-  hostname = "worker-1"
-  zone      = "ru-central1-a"
-  platform_id = "standard-v1"
-  resources {
-    cores  = 4
-    memory = 4
-  }
-  boot_disk {
-    initialize_params {
-      image_id = "fd8di2mid9ojikcm93en"
-      size = "30"
-    }
-  }
-  network_interface {
-    subnet_id = yandex_vpc_subnet.subnet-a.id
+ network_interface {
+#    subnet_id = each.value.subnet_id    
+    subnet_id = yandex_vpc_subnet.subnets[each.value.subnet_id].id
+# subnet_id = yandex_vpc_subnet.subnet-a.id
     nat       = true
   }
 
   metadata = {
     ssh-keys = "ubuntu:${file("id_rsa.pub")}"
   }
+}
 
-## Kubernetes worker-2
-resource "yandex_compute_instance" "worker-2" {
-  name = "worker-2"
-  hostname = "worker-2"
-  zone      = "ru-central1-b"
-  platform_id = "standard-v1"
-  resources {
-    cores  = 4
-    memory = 4
-  }
-  boot_disk {
-    initialize_params {
-      image_id = "fd8di2mid9ojikcm93en"
-      size = "30"
-    }
-  }
-  network_interface {
-    subnet_id = yandex_vpc_subnet.subnet-b.id
-    nat       = true
-  }
 
-  metadata = {
-    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
- }
 
-## Kubernetes worker-3
-resource "yandex_compute_instance" "worker-3" {
-  name = "worker-3"
-  hostname = "worker-3"
-  zone      = "ru-central1-b"
-  platform_id = "standard-v3"
-  resources {
-    cores  = 4
-    memory = 4
-  }
-  boot_disk {
-    initialize_params {
-      image_id = "fd8di2mid9ojikcm93en"
-      size = "30"
-    }
-  }
-  network_interface {
-    subnet_id = yandex_vpc_subnet.subnet-d.id
-    nat       = true
-  }
 
-  metadata = {
-    ssh-keys = "ubuntu:${file("id_rsa.pub")}"
- }
 
 
 
