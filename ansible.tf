@@ -14,34 +14,34 @@ resource "local_file" "inventory-kubespray" {
   content = <<EOF2
 all:
   hosts:
-    ${yandex_compute_instance.master.fqdn}:
-      ansible_host: ${yandex_compute_instance.master.network_interface.0.ip_address}
-      ip: ${yandex_compute_instance.master.network_interface.0.ip_address}
-      access_ip: ${yandex_compute_instance.master.network_interface.0.ip_address}
-    ${yandex_compute_instance.worker-1.fqdn}:
-      ansible_host: ${yandex_compute_instance.worker-1.network_interface.0.ip_address}
-      ip: ${yandex_compute_instance.worker-1.network_interface.0.ip_address}
-      access_ip: ${yandex_compute_instance.worker-1.network_interface.0.ip_address}
-    ${yandex_compute_instance.worker-2.fqdn}:
-      ansible_host: ${yandex_compute_instance.worker-2.network_interface.0.ip_address}
-      ip: ${yandex_compute_instance.worker-2.network_interface.0.ip_address}
-      access_ip: ${yandex_compute_instance.worker-2.network_interface.0.ip_address}
-    ${yandex_compute_instance.worker-3.fqdn}:
-      ansible_host: ${yandex_compute_instance.worker-3.network_interface.0.ip_address}
-      ip: ${yandex_compute_instance.worker-3.network_interface.0.ip_address}
-      access_ip: ${yandex_compute_instance.worker-3.network_interface.0.ip_address}
+      ${yandex_compute_instance.vms["master"].fqdn}:
+      ansible_host: ${yandex_compute_instance.vms["master"].network_interface.0.ip_address}
+      ip: ${yandex_compute_instance.vms["master"].network_interface.0.ip_address}
+      access_ip: ${yandex_compute_instance.vms["master"].network_interface.0.ip_address}
+    ${yandex_compute_instance.vms["worker-1"].fqdn}:
+      ansible_host: ${yandex_compute_instance.vms["worker-1"].network_interface.0.ip_address}
+      ip: ${yandex_compute_instance.vms["worker-1"].network_interface.0.ip_address}
+      access_ip: ${yandex_compute_instance.vms["worker-1"].network_interface.0.ip_address}
+    ${yandex_compute_instance.vms["worker-2"].fqdn}:
+      ansible_host: ${yandex_compute_instance.vms["worker-2"].network_interface.0.ip_address}
+      ip: ${yandex_compute_instance.vms["worker-2"].network_interface.0.ip_address}
+      access_ip: ${yandex_compute_instance.vms["worker-2"].network_interface.0.ip_address}
+    ${yandex_compute_instance.vms["worker-3"].fqdn}:
+      ansible_host: ${yandex_compute_instance.vms["worker-3"].network_interface.0.ip_address}
+      ip: ${yandex_compute_instance.vms["worker-3"].network_interface.0.ip_address}
+      access_ip: ${yandex_compute_instance.vms["worker-3"].network_interface.0.ip_address}
   children:
     kube_control_plane:
       hosts:
-        ${yandex_compute_instance.master.fqdn}:
+        ${yandex_compute_instance.vms["master"].fqdn}:
     kube_node:
       hosts:
-        ${yandex_compute_instance.worker-1.fqdn}:
-        ${yandex_compute_instance.worker-2.fqdn}:
-        ${yandex_compute_instance.worker-3.fqdn}:
+        ${yandex_compute_instance.vms["worker-1"].fqdn}:
+        ${yandex_compute_instance.vms["worker-2"].fqdn}:
+        ${yandex_compute_instance.vms["worker-3"].fqdn}:
     etcd:
       hosts:
-        ${yandex_compute_instance.master.fqdn}:
+        ${yandex_compute_instance.vms["master"].fqdn}:
     k8s_cluster:
       children:
         kube_control_plane:
