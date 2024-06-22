@@ -4,6 +4,30 @@ output "internal_ip_address_vm_master" {
   value = yandex_compute_instance.vms["master"].network_interface[0].ip_address
 }
 
-output "fqdn_vm_master" {
-  value = yandex_compute_instance.vms["master"].fqdn
+output "master_ip_address_nat-master" {
+value = yandex_compute_instance.vms["master"].fqdn
 }
+
+
+output "internal-ip-address-worker-1" {
+value = yandex_compute_instance.vms["worker-1"].network_interface[0].ip_address"
+}
+output "master_ip_address_nat-worker-1" {
+value = yandex_compute_instance.vms["worker-1"].fqdn
+}
+
+output "internal-ip-address-worker-2" {
+value = yandex_compute_instance.vms["worker-1"].network_interface[0].ip_address"
+}
+output "master_ip_address_nat-worker-2" {
+value = yandex_compute_instance.vms["worker-2"].fqdn
+}
+
+
+output "internal-ip-address-worker-3" {
+value = yandex_compute_instance.vms["worker-3"].network_interface[0].ip_address"
+}
+output "master_ip_address_nat-worker-3" {
+value = yandex_compute_instance.vms["worker-3"].fqdn
+}
+
