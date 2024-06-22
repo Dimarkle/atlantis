@@ -71,6 +71,7 @@ resource "yandex_compute_instance" "master" {
   }
 
   scheduling_policy { preemptible = false }
+ }
 
 ## Kubernetes worker-1
 resource "yandex_compute_instance" "worker-1" {
@@ -98,6 +99,7 @@ resource "yandex_compute_instance" "worker-1" {
   }
 
   scheduling_policy { preemptible = false }
+ }
 
 ## Kubernetes worker-2
 resource "yandex_compute_instance" "worker-2" {
@@ -125,6 +127,7 @@ resource "yandex_compute_instance" "worker-2" {
   }
 
   scheduling_policy { preemptible = false }
+ }
 
 ## Kubernetes worker-3
 resource "yandex_compute_instance" "worker-3" {
