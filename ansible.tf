@@ -1,3 +1,14 @@
+
+# Ansible inventory for preparation
+resource "local_file" "inventory-preparation" {
+  content = <<-EOF
+[kube-cloud]
+${join("\n", values(yandex_compute_instance.vms).*.network_interface.0.nat_ip_address)}
+  EOF
+  filename = "../ansible/inventory-preparation"
+  depends_on = [yandex_compute_instance.vms]
+}
+
 # Ansible inventory for Kuberspray
 resource "local_file" "inventory-kubespray" {
   content = <<EOF2
@@ -42,13 +53,4 @@ all:
   depends_on = [yandex_compute_instance.vms]
 }
 
-# Ansible inventory for preparation
-resource "local_file" "inventory-preparation" {
-  content = <<-EOF
-[kube-cloud]
-${join("\n", values(yandex_compute_instance.vms).*.network_interface.0.nat_ip_address)}
-  EOF1
-  filename = "../ansible/inventory-preparation"
-  depends_on = [yandex_compute_instance.vms]
-}
 
