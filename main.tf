@@ -38,6 +38,7 @@ resource "yandex_compute_instance" "vms" {
   name = each.value.name
   hostname = each.value.hostname
   zone = each.value.zone
+  platform_id = "standard-v3"
 
   resources {
     cores  = each.value.cores
@@ -47,7 +48,6 @@ resource "yandex_compute_instance" "vms" {
   boot_disk {
     initialize_params {
       image_id = "fd8di2mid9ojikcm93en"
-       platform_id = "standard-v3"
       size     = "30"
     }
   }
