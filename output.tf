@@ -9,3 +9,12 @@ value = yandex_compute_instance.vms["master"].fqdn
 }
 
 
+output "internal-ip-address-worker-1" {
+value = yandex_compute_instance.vms["worker-1"].network_interface[0].ip_address"
+}
+
+output "master_ip_address_nat-worker-1" {
+value = yandex_compute_instance.vms["worker-1"].fqdn
+}
+
+
