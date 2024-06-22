@@ -12,7 +12,7 @@ variable "folder_id" {
   description = "https://cloud.yandex.ru/docs/resource-manager/operations/folder/get-id"
 }
 
-variable "var.zone" {
+variable "yc_zone" {
   default = "ru-central1-a"
 }
 
