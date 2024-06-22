@@ -2,84 +2,63 @@ terraform {
   required_providers {
     yandex = {
       source = "yandex-cloud/yandex"
-      version =  ">=0.13"
-    }
+         }
   }
+  required_version = ">=0.13"
 }
 provider "yandex" {
   token     = var.token
   cloud_id  = var.cloud_id
   folder_id = var.folder_id
-  zone      = var.default_zone
+  }
 
+
+
+
+# Создаем VPC
+
+resource "yandex_vpc_network" "net" {
+name = "net"
 }
 
-# Создаем сервисный аккаунт
-resource "yandex_iam_service_account" "diman-diplom" {
-  folder_id   = var.folder_id
-  name        = "diman-diplom"
-  description = "Service account"
-}
-
-# Создаем роль "editor"
-resource "yandex_resourcemanager_folder_iam_binding" "editor" {
-  folder_id = var.folder_id
-  role      = "editor"
-  members   = [
-    "serviceAccount:${yandex_iam_service_account.diman-diplom.id}"
-  ]
-}
-
-# Создаем  роль  "storage-admin"
-resource "yandex_resourcemanager_folder_iam_binding" "storage-admin" {
-  folder_id = var.folder_id
-  role      = "storage.admin"
-  members   = [
-    "serviceAccount:${yandex_iam_service_account.diman-diplom.id}"
-  ]
-}
-# VPC
-resource "yandex_vpc_network" "network-diplom" {
-  name = "network-diplom"
-  folder_id = var.folder_id
-}
-
-# Подсети
+# Подсеть
 resource "yandex_vpc_subnet" "subnet-a" {
   name           = "subnet-a"
   zone           = "ru-central1-a"
-  network_id     = yandex_vpc_network.network-diplom.id
+  network_id     = yandex_vpc_network.net.id
   v4_cidr_blocks = ["192.168.10.0/24"]
 }
 
 resource "yandex_vpc_subnet" "subnet-b" {
   name           = "subnet-b"
   zone           = "ru-central1-b"
-  network_id     = yandex_vpc_network.network-diplom.id
+  network_id     = yandex_vpc_network.net.id
   v4_cidr_blocks = ["192.168.20.0/24"]
 }
 
 resource "yandex_vpc_subnet" "subnet-d" {
   name           = "subnet-d"
   zone           = "ru-central1-d"
-  network_id     = yandex_vpc_network.network-diplom.id
+  network_id     = yandex_vpc_network.net.id
   v4_cidr_blocks = ["192.168.30.0/24"]
 }
 
-# Машинки:
+
+
+# Virtual machines
 ## Kubernetes master
-resource "yandex_compute_instance" "vm-master" {
-  name = "vm-master"
-  hostname = "vm-master"
+resource "yandex_compute_instance" "master" {
+  name = "master"
+  hostname = "master"
   zone      = "ru-central1-a"
   resources {
-    cores  = 2
+    cores  = 4
     memory = 4
   }
   boot_disk {
     initialize_params {
-      image_id = "fd8n7dushkonnbvt3lpc"
-      size = "10"
+      image_id = "fd8di2mid9ojikcm93en"
+      size = "30"
     }
   }
   network_interface {
@@ -92,18 +71,19 @@ resource "yandex_compute_instance" "vm-master" {
 }
 
 ## Kubernetes worker-1
-resource "yandex_compute_instance" "vm-worker-1" {
-  name = "vm-worker-1"
-  hostname = "vm-worker-1"
+resource "yandex_compute_instance" "worker-1" {
+  name = "worker-1"
+  hostname = "worker-1"
   zone      = "ru-central1-a"
+  platform_id = "standard-v1"
   resources {
-    cores  = 2
-    memory = 2
+    cores  = 4
+    memory = 4
   }
   boot_disk {
     initialize_params {
-      image_id = "fd8n7dushkonnbvt3lpc"
-      size = "10"
+      image_id = "fd8di2mid9ojikcm93en"
+      size = "30"
     }
   }
   network_interface {
@@ -111,23 +91,24 @@ resource "yandex_compute_instance" "vm-worker-1" {
     nat       = true
   }
   metadata = {
-    user-data = "${file("./meta.txt")}"
+    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
   }
 }
 
 ## Kubernetes worker-2
-resource "yandex_compute_instance" "vm-worker-2" {
-  name = "vm-worker-2"
-  hostname = "vm-worker-2"
+resource "yandex_compute_instance" "worker-2" {
+  name = "worker-2"
+  hostname = "worker-2"
   zone      = "ru-central1-b"
+  platform_id = "standard-v1"
   resources {
-    cores  = 2
-    memory = 2
+    cores  = 4
+    memory = 4
   }
   boot_disk {
     initialize_params {
-      image_id = "fd8n7dushkonnbvt3lpc"
-      size = "10"
+      image_id = "fd8di2mid9ojikcm93en"
+      size = "30"
     }
   }
   network_interface {
@@ -135,23 +116,24 @@ resource "yandex_compute_instance" "vm-worker-2" {
     nat       = true
   }
   metadata = {
-    user-data = "${file("./meta.txt")}"
+    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
   }
 }
 
 ## Kubernetes worker-3
-resource "yandex_compute_instance" "vm-worker-3" {
-  name = "vm-worker-3"
-  hostname = "vm-worker-3"
+resource "yandex_compute_instance" "worker-3" {
+  name = "worker-3"
+  hostname = "worker-3"
   zone      = "ru-central1-d"
+  platform_id = "standard-v3"
   resources {
-    cores  = 2
-    memory = 2
+    cores  = 4
+    memory = 4
   }
   boot_disk {
     initialize_params {
-      image_id = "fd8n7dushkonnbvt3lpc"
-      size = "10"
+      image_id = "fd8di2mid9ojikcm93en"
+      size = "30"
     }
   }
   network_interface {
@@ -159,18 +141,80 @@ resource "yandex_compute_instance" "vm-worker-3" {
     nat       = true
   }
   metadata = {
-    user-data = "${file("./meta.txt")}"
+    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
   }
 }
 
-# Создаем хранилище образов  Docker
-resource "yandex_container_registry" "docker" {
-name = "docker"
-folder_id = var.folder_id
-labels = {
-my-label = "my-label-value"
+# Ansible inventory for Kuberspray
+resource "local_file" "inventory-kubespray" {
+  content = <<EOF2
+all:
+  hosts:
+    ${yandex_compute_instance.master.fqdn}:
+      ansible_host: ${yandex_compute_instance.master.network_interface.0.ip_address}
+      ip: ${yandex_compute_instance.master.network_interface.0.ip_address}
+      access_ip: ${yandex_compute_instance.master.network_interface.0.ip_address}
+    ${yandex_compute_instance.worker-1.fqdn}:
+      ansible_host: ${yandex_compute_instance.worker-1.network_interface.0.ip_address}
+      ip: ${yandex_compute_instance.worker-1.network_interface.0.ip_address}
+      access_ip: ${yandex_compute_instance.worker-1.network_interface.0.ip_address}
+    ${yandex_compute_instance.worker-2.fqdn}:
+      ansible_host: ${yandex_compute_instance.worker-2.network_interface.0.ip_address}
+      ip: ${yandex_compute_instance.worker-2.network_interface.0.ip_address}
+      access_ip: ${yandex_compute_instance.worker-2.network_interface.0.ip_address}
+    ${yandex_compute_instance.worker-3.fqdn}:
+      ansible_host: ${yandex_compute_instance.worker-3.network_interface.0.ip_address}
+      ip: ${yandex_compute_instance.worker-3.network_interface.0.ip_address}
+      access_ip: ${yandex_compute_instance.worker-3.network_interface.0.ip_address}
+  children:
+    kube_control_plane:
+      hosts:
+        ${yandex_compute_instance.master.fqdn}:
+    kube_node:
+      hosts:
+        ${yandex_compute_instance.worker-1.fqdn}:
+        ${yandex_compute_instance.worker-2.fqdn}:
+        ${yandex_compute_instance.worker-3.fqdn}:
+    etcd:
+      hosts:
+        ${yandex_compute_instance.master.fqdn}:
+    k8s_cluster:
+      children:
+        kube_control_plane:
+        kube_node:
+    calico_rr:
+      hosts: {}
+  EOF2
+  filename = "../ansible/inventory-kubespray"
+  depends_on = [yandex_compute_instance.master, yandex_compute_instance.worker-1, yandex_compute_instance.worker-2, yandex_compute_instance.worker-3]
 }
+
+# Ansible inventory for preparation
+resource "local_file" "inventory-preparation" {
+  content = <<EOF1
+[kube-cloud]
+${yandex_compute_instance.master.network_interface.0.nat_ip_address}
+${yandex_compute_instance.worker-1.network_interface.0.nat_ip_address}
+${yandex_compute_instance.worker-2.network_interface.0.nat_ip_address}
+${yandex_compute_instance.worker-3.network_interface.0.nat_ip_address}
+  EOF1
+  filename = "../ansible/inventory-preparation"
+  depends_on = [yandex_compute_instance.master, yandex_compute_instance.worker-1, yandex_compute_instance.worker-2, yandex_compute_instance.worker-3]
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
