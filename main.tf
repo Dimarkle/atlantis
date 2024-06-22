@@ -125,7 +125,7 @@ resource "yandex_compute_instance" "worker-2" {
 resource "yandex_compute_instance" "worker-3" {
   name = "worker-3"
   hostname = "worker-3"
-  zone      = "ru-central1-d"
+  zone      = "ru-central1-b"
   platform_id = "standard-v3"
   resources {
     cores  = 4
@@ -144,8 +144,8 @@ resource "yandex_compute_instance" "worker-3" {
 
   metadata = {
     ssh-keys = "ubuntu:${file("id_rsa.pub")}"
+ }
 
-  }
 
 
 
