@@ -146,7 +146,7 @@ resource "yandex_compute_instance" "worker-3" {
     ssh-keys = "ubuntu:${file("id_rsa.pub")}"
 
   }
-
+ }
 
 
 
