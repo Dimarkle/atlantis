@@ -65,10 +65,12 @@ resource "yandex_compute_instance" "master" {
     subnet_id = yandex_vpc_subnet.subnet-a.id
     nat       = true
   }
+
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+      user-data          = data.template_file.cloudinit.rendered
   }
-}
+
+  scheduling_policy { preemptible = false }
 
 ## Kubernetes worker-1
 resource "yandex_compute_instance" "worker-1" {
@@ -90,10 +92,12 @@ resource "yandex_compute_instance" "worker-1" {
     subnet_id = yandex_vpc_subnet.subnet-a.id
     nat       = true
   }
+
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+      user-data          = data.template_file.cloudinit.rendered
   }
-}
+
+  scheduling_policy { preemptible = false }
 
 ## Kubernetes worker-2
 resource "yandex_compute_instance" "worker-2" {
@@ -115,10 +119,12 @@ resource "yandex_compute_instance" "worker-2" {
     subnet_id = yandex_vpc_subnet.subnet-b.id
     nat       = true
   }
+
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+      user-data          = data.template_file.cloudinit.rendered
   }
-}
+
+  scheduling_policy { preemptible = false }
 
 ## Kubernetes worker-3
 resource "yandex_compute_instance" "worker-3" {
@@ -140,10 +146,12 @@ resource "yandex_compute_instance" "worker-3" {
     subnet_id = yandex_vpc_subnet.subnet-d.id
     nat       = true
   }
+
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+      user-data          = data.template_file.cloudinit.rendered
   }
-}
+
+  scheduling_policy { preemptible = false }
 
 
 
