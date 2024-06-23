@@ -1,5 +1,4 @@
 # atlantis
 
-Status of Last Deployment:<br>
-<img src="https://github.com/Dimarkle/atlantis/workflows/Terraform/badge.svg?branch=master"><br>
 
+![Build Status](https://github.com/Dimarkle/atlantis/workflows/Terraform/badge.svg)](https://github.com/{Dimarkle}/{atlantis}/actions/workflows/terraform.yml)
